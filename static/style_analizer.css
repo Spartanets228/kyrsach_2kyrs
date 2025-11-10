@@ -1,0 +1,32 @@
+body {
+    font-family: sans-serif;
+    background-color: #f4f4f4;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+li {
+    margin: 5px 0;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.folder a {
+    text-decoration: none;
+    color: blue;
+}
+
+.file.small {
+    background-color: #c8e6c9; /* зелёный — маленький файл */
+}
+
+.file.medium {
+    background-color: #fff9c4; /* жёлтый — средний */
+}
+
+.file.large {
+    background-color: #ffcdd2; /* красный — большой */
+}
