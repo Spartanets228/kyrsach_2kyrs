@@ -1,45 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Disk Analyzer</title>
+    <title>Файловый Анализатор</title>
     <link rel="stylesheet" href="/static/style_analizer.css">
 </head>
 <body>
-    <h1>Анализатор дискового пространства</h1>
-    {% if is_drive_list %}
-    <h2>Выберите диск:</h2>
-    <ul>
-        {% for d in items %}
-            <li><a href="/analyzer?path={{ d | urlencode }}">{{ d }}</a></li>
-        {% endfor %}
-    </ul>
-    {% else %}
-        <a href="/analyzer">← Назад к списку дисков</a><br>
-        <h3>Путь: {{ path }}</h3>
+    <h1>Файловый Анализатор</h1>
 
-        {% if error %}
-            <p style="color:red">{{ error }}</p>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if not is_drive_list %}
+        {% if parent_path %}
+            <a href="/analizer/{{ parent_path | urlencode }}" class="back-btn">⬅ Назад</a>
         {% endif %}
+        <a href="/analizer" class="back-btn">🧭 К списку дисков</a>
+    {% endif %}
 
+    {% if is_drive_list %}
+        <h3>Диски:</h3>
         <ul>
-            {% for item in items %}
-                {% if item.type == "dir" %}
-                    <li class="folder">
-                        <a href="/analyzer?path={{ (path ~ '/' ~ item.name) | urlencode }}">{{ item.name }}/</a>
-                    </li>
-                {% else %}
-                    {% set size = item.size %}
-                    {% if size < 1000000 %}
-                        <li class="file small">{{ item.name }} ({{ (size/1024)|round(1) }} КБ)</li>
-                    {% elif size < 10000000 %}
-                        <li class="file medium">{{ item.name }} ({{ (size/1024/1024)|round(1) }} МБ)</li>
-                    {% else %}
-                        <li class="file large">{{ item.name }} ({{ (size/1024/1024)|round(1) }} МБ)</li>
-                    {% endif %}
-                {% endif %}
+            {% for drive in items %}
+                <li><a href="/analizer/{{ drive | urlencode }}">{{ drive }}</a></li>
             {% endfor %}
         </ul>
+    {% else %}
+        <h3>Папка: {{ path }}</h3>
+        <ul>
+            {% for item in items %}
+            <li class="level-0" {% if item.type == 'file' %}data-size="{{ item.size|int }}"{% endif %}>
+                    <div class="name">
+                        {% if item.type == 'dir' %}
+                            📁 <a href="/analizer/{{ (path.rstrip('/') + '/' + item.name) | urlencode }}">{{ item.name }}</a>
+                        {% else %}
+                            📄 {{ item.name }}
+                        {% endif %}
+                    </div>
+                    {% if item.type == 'file' %}
+                        <div class="size">{{ item.size }} КБ</div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>        
     {% endif %}
 </body>
 </html>
