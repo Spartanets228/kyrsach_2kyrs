@@ -1,14 +1,30 @@
+/* Общий фон и шрифт */
 body {
-    font-family: "Consolas", "Courier New", monospace;
-    background-color: #f4f4f4;
-    color: #333;
+    font-family: "Segoe UI", "Consolas", "Courier New", monospace;
+    background: linear-gradient(to bottom right, #ffffff, #f0f4f8);
+    color: #2c3e50;
     margin: 20px;
+    padding: 10px;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
+/* Заголовки */
 h1 {
-    font-size: 24px;
+    font-size: 32px;
     margin-bottom: 20px;
     color: #2c3e50;
+    text-align: center;
+}
+
+h2 {
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    padding: 0 20px;
+    font-size: 16px;
+    color: #2c3e50;
+    text-align: justify;
 }
 
 h3 {
@@ -17,6 +33,7 @@ h3 {
     color: #34495e;
 }
 
+/* Ссылки */
 a {
     text-decoration: none;
     color: #007BFF;
@@ -26,21 +43,24 @@ a:hover {
     text-decoration: underline;
 }
 
+/* Кнопка назад */
 .back-btn {
     display: inline-block;
     margin-right: 10px;
     margin-bottom: 15px;
     font-size: 14px;
     color: #555;
+    font-weight: bold;
 }
 
+/* Ошибки */
 .error {
     color: #c0392b;
     font-weight: bold;
     margin-bottom: 15px;
 }
 
-/* Таблица файлов и папок */
+/* Список файлов */
 ul {
     list-style-type: none;
     padding: 0;
@@ -49,21 +69,25 @@ ul {
     max-width: 900px;
     box-shadow: 0 0 5px rgba(0,0,0,0.1);
     font-size: 14px;
+    margin: 0 0 20px 20px; /* отступ слева */
 }
 
+/* Элементы списка */
 li {
     padding: 8px 12px;
     border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s ease;
 }
 
+/* Последний элемент без границы */
 li:last-child {
     border-bottom: none;
 }
 
-/* Иконка + имя */
+/* Название файла/папки */
 li .name {
     flex-grow: 1;
     display: flex;
@@ -72,32 +96,73 @@ li .name {
 
 /* Размер */
 li .size {
-    color: #888;
+    color: #555;
     font-size: 13px;
     white-space: nowrap;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: #e8f0f8;
 }
 
-/* Отступы для древовидной структуры */
+/* Иерархия */
 li.level-0 .name { padding-left: 0px; }
 li.level-1 .name { padding-left: 20px; }
 li.level-2 .name { padding-left: 40px; }
 li.level-3 .name { padding-left: 60px; }
-/* можно продолжать при необходимости */
 
-/* Цветовая градация по размеру */
+/* Подсветка по размеру */
 li[data-size] .size {
-    background: linear-gradient(to right, #e0f7fa, #b2ebf2);
+    font-size: 13px;
+    white-space: nowrap;
     padding: 2px 6px;
     border-radius: 4px;
+    background-color: transparent;
 }
 
-li[data-size^="0"] .size { background-color: #e0f7fa; }
-li[data-size^="1"] .size { background-color: #b2ebf2; }
-li[data-size^="2"] .size { background-color: #80deea; }
-li[data-size^="3"] .size { background-color: #4dd0e1; }
-li[data-size^="4"] .size { background-color: #26c6da; }
-li[data-size^="5"] .size { background-color: #00bcd4; color: white; }
-li[data-size^="6"] .size { background-color: #00acc1; color: white; }
-li[data-size^="7"] .size { background-color: #0097a7; color: white; }
-li[data-size^="8"] .size { background-color: #00838f; color: white; }
-li[data-size^="9"] .size { background-color: #006064; color: white; }
+/* Градиентная подсветка по размеру */
+li[data-size] {
+    background: linear-gradient(to right, #fffbe6, #ffffff); /* базовый светлый фон */
+}
+
+/* Чем больше размер — тем насыщеннее жёлтый */
+li[data-size^="1"] {
+    background: linear-gradient(to right, #fff9cc, #ffffff); /* 1–9 MB */
+}
+
+li[data-size^="2"],
+li[data-size^="3"],
+li[data-size^="4"] {
+    background: linear-gradient(to right, #fff59d, #ffffff); /* 10–99 MB */
+}
+
+li[data-size^="5"],
+li[data-size^="6"],
+li[data-size^="7"],
+li[data-size^="8"],
+li[data-size^="9"] {
+    background: linear-gradient(to right, #ffee58, #ffffff); /* 100–999 MB */
+}
+
+li[data-size^="10"],
+li[data-size^="11"],
+li[data-size^="12"] {
+    background: linear-gradient(to right, #fdd835, #ffffff); /* 1–3 GB */
+}
+
+li[data-size^="13"],
+li[data-size^="14"],
+li[data-size^="15"] {
+    background: linear-gradient(to right, #fbc02d, #ffffff); /* 3–5 GB */
+}
+
+li[data-size^="16"],
+li[data-size^="17"],
+li[data-size^="18"],
+li[data-size^="19"] {
+    background: linear-gradient(to right, #f9a825, #ffffff); /* >5 GB */
+}
+
+/* Эффект при наведении */
+li:hover {
+    background-color: #dfeffc;
+}

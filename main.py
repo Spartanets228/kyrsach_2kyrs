@@ -8,7 +8,7 @@ import os
 import platform
 import psutil
 from urllib.parse import quote, unquote
-import stat 
+
 
 app = FastAPI()
 
