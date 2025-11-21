@@ -9,18 +9,15 @@ import platform
 import psutil
 from urllib.parse import quote, unquote
 
-
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-
 @app.get("/", response_class=HTMLResponse)
 @app.get("/analizer", response_class=HTMLResponse)
 @app.get("/analizer/{path:path}", response_class=HTMLResponse)
 def get_analyzer_page(request: Request, path: str | None = None):
-    # Если путь не указан — показываем список дисков
     if path is None or path == "":
         drives = []
         system = platform.system()
@@ -38,10 +35,8 @@ def get_analyzer_page(request: Request, path: str | None = None):
             "parent_path": None
         })
 
-    # Декодируем путь
     path = unquote(path)
 
-    # Проверяем существование пути
     if not os.path.exists(path):
         return templates.TemplateResponse("404.html", {"request": request}, status_code=404)
 
@@ -51,12 +46,10 @@ def get_analyzer_page(request: Request, path: str | None = None):
             if entry.is_dir():
                 items.append({"name": entry.name, "type": "dir"})
             else:          
-                size = entry.stat().st_size / 1024  # перевод байт в килобайты
-                size = round(size, 2)  # округляем до двух знаков
+                size = entry.stat().st_size / 1024 
+                size = round(size, 2)  
                 items.append({"name": entry.name, "type": "file", "size": size})
 
-
-        # Родительская папка
         parent_path = None
         if path and os.path.dirname(path) != path:
             parent_path = os.path.dirname(path)
