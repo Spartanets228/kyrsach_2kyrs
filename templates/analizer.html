@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Анализатор дискового пространства</h1>
-    <h2>Анализатор дискового пространства позволяет быстро определить, какие файлы и папки занимают больше всего места на диске. Это помогает эффективно управлять хранилищем, освобождать пространство и поддерживать порядок в системе.</h2>
+    <h2>Позволяет определить, какие файлы и папки занимают больше всего места.</h2>
 
     {% if error %}
         <p class="error">{{ error }}</p>
@@ -24,14 +24,29 @@
         <h3>Диски:</h3>
         <ul>
             {% for drive in items %}
-                <li><a href="/analizer/{{ drive | urlencode }}">{{ drive }}</a></li>
+                <li class="item">
+                    <div class="name">
+                        💽 <a href="/analizer/{{ drive.name | urlencode }}">{{ drive.name }}</a>
+                    </div>
+                    <div class="size">
+                        {% if drive.size < 1024 %}
+                            {{ drive.size }} байт
+                        {% elif drive.size < 1024 * 1024 %}
+                            {{ (drive.size / 1024)|round(1) }} КБ
+                        {% elif drive.size < 1024 * 1024 * 1024 %}
+                            {{ (drive.size / (1024 * 1024))|round(1) }} МБ
+                        {% else %}
+                            {{ (drive.size / (1024 * 1024 * 1024))|round(2) }} ГБ
+                        {% endif %}
+                    </div>
+                </li>
             {% endfor %}
         </ul>
     {% else %}
         <h3>Папка: {{ path }}</h3>
         <ul>
             {% for item in items %}
-            <li class="level-0" {% if item.type == 'file' %}data-size="{{ item.size|int // 1024 }}"{% endif %}>
+            <li class="item">
                 <div class="name">
                     {% if item.type == 'dir' %}
                         📁 <a href="/analizer/{{ (path.rstrip('/') + '/' + item.name) | urlencode }}">{{ item.name }}</a>
@@ -39,22 +54,20 @@
                         📄 {{ item.name }}
                     {% endif %}
                 </div>
-                {% if item.type == 'file' %}
-                    <div class="size">
-                        {% if item.size < 1024 %}
-                            {{ item.size }} Б   
-                        {% elif item.size < 1024 * 1024 %}
-                            {{ (item.size / 1024)|round(1) }} КБ
-                        {% elif item.size < 1024 * 1024 * 1024 %}
-                            {{ (item.size / (1024 * 1024))|round(1) }} МБ
-                        {% else %}
-                            {{ (item.size / (1024 * 1024 * 1024))|round(2) }} ГБ
-                        {% endif %}
-                    </div>
-                {% endif %}
-            </li>            
+                <div class="size">
+                    {% if item.size < 1024 %}
+                        {{ item.size }} байт
+                    {% elif item.size < 1024 * 1024 %}
+                        {{ (item.size / 1024)|round(1) }} КБ
+                    {% elif item.size < 1024 * 1024 * 1024 %}
+                        {{ (item.size / (1024 * 1024))|round(1) }} МБ
+                    {% else %}
+                        {{ (item.size / (1024 * 1024 * 1024))|round(2) }} ГБ
+                    {% endif %}
+                </div>
+            </li>
             {% endfor %}
-        </ul>        
+        </ul>
     {% endif %}
 </body>
 </html>
