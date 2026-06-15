@@ -2,72 +2,175 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Файловый Анализатор</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анализатор дискового пространства</title>
     <link rel="stylesheet" href="/static/style_analizer.css">
 </head>
 <body>
-    <h1>Анализатор дискового пространства</h1>
-    <h2>Позволяет определить, какие файлы и папки занимают больше всего места.</h2>
-
+<div class="container">
+    <header class="header">
+        <h1>
+            Анализатор дискового пространства
+        </h1>
+        <p>
+            Современный анализ использования места на дисках
+        </p>
+    </header>
     {% if error %}
-        <p class="error">{{ error }}</p>
+    <div class="error-box">
+        {{ error }}
+    </div>
     {% endif %}
-
     {% if not is_drive_list %}
+    <div class="navigation">
         {% if parent_path %}
-            <a href="/analizer/{{ parent_path | urlencode }}" class="back-btn">⬅ Назад</a>
+        <a class="nav-btn" href="/analizer/{{ parent_path|urlencode }}">
+            ⬅ Назад
+        </a>
         {% endif %}
-        <a href="/analizer" class="back-btn">🏠 К списку дисков</a>
+        <a class="nav-btn" href="/analizer">
+            Диски
+        </a>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-title">
+                📁 Текущая папка
+            </div>
+            <div class="stat-value">
+                {{ path }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">
+                📦 Объектов
+            </div>
+            <div class="stat-value">
+                {{ items|length }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">
+                💾 Размер папки
+            </div>
+            <div class="stat-value">
+                {{ total_size }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">
+                Самый большой
+            </div>
+            <div class="stat-value">
+                {{ largest_item }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">
+                Объем диска
+            </div>
+            <div class="stat-value">
+                {{ disk_total_text }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">
+                Использовано
+            </div>
+            <div class="stat-value">
+                {{ disk_used_text }}
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <h2 class="section-title">
+        💽 Доступные диски
+    </h2>
     {% endif %}
 
-    {% if is_drive_list %}
-        <h3>Диски:</h3>
-        <ul>
-            {% for drive in items %}
-                <li class="item">
-                    <div class="name">
-                        💽 <a href="/analizer/{{ drive.name | urlencode }}">{{ drive.name }}</a>
-                    </div>
-                    <div class="size">
-                        {% if drive.size < 1024 %}
-                            {{ drive.size }} байт
-                        {% elif drive.size < 1024 * 1024 %}
-                            {{ (drive.size / 1024)|round(1) }} КБ
-                        {% elif drive.size < 1024 * 1024 * 1024 %}
-                            {{ (drive.size / (1024 * 1024))|round(1) }} МБ
-                        {% else %}
-                            {{ (drive.size / (1024 * 1024 * 1024))|round(2) }} ГБ
-                        {% endif %}
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <h3>Папка: {{ path }}</h3>
-        <ul>
-            {% for item in items %}
-            <li class="item">
-                <div class="name">
-                    {% if item.type == 'dir' %}
-                        📁 <a href="/analizer/{{ (path.rstrip('/') + '/' + item.name) | urlencode }}">{{ item.name }}</a>
-                    {% else %}
-                        📄 {{ item.name }}
-                    {% endif %}
+    <div class="list">
+        <div class="list">
+    {% for item in items %}
+    <div class="item-card">
+        <div class="item-header">
+            <div class="item-name">
+                {% if is_drive_list %}
+                    💽 
+                    <a href="/analizer/{{ item.name|urlencode }}">
+                        {{ item.name }}
+                    </a>
+                {% else %}
+                    {% if item.type == "dir" %}
+                        📁
+                        <a href="/analizer/{{ (path + '\\' + item.name)|urlencode }}">            
+                            {{ item.name }}         
+                        </a>            
+                    {% else %}           
+                        📄          
+                        {{ item.name }}           
+                    {% endif %}           
+                {% endif %}           
+            </div>
+
+            <div class="item-size">
+                {{ item.size_text }}
+                {% if is_drive_list %}
+                <br>
+                <span style="font-size:13px; color:#9ca3af;">
+                {{ item.percent }}% заполнено
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="progress-block">
+            <div class="progress">
+                <div class="progress-fill" style="
+
+                width: {{ item.percent }}%;
+
+                {% if item.percent >= 80 %}
+
+                background: linear-gradient(
+                90deg,
+                #ef4444,
+                #dc2626
+                );
+
+                {% elif item.percent >= 50 %}
+
+                background: linear-gradient(
+                90deg,
+                #f59e0b,
+                #f97316
+                );
+
+                {% else %}
+
+                background: linear-gradient(
+                90deg,
+                #22c55e,
+                #3b82f6
+                );
+
+                {% endif %}">
                 </div>
-                <div class="size">
-                    {% if item.size < 1024 %}
-                        {{ item.size }} байт
-                    {% elif item.size < 1024 * 1024 %}
-                        {{ (item.size / 1024)|round(1) }} КБ
-                    {% elif item.size < 1024 * 1024 * 1024 %}
-                        {{ (item.size / (1024 * 1024))|round(1) }} МБ
-                    {% else %}
-                        {{ (item.size / (1024 * 1024 * 1024))|round(2) }} ГБ
-                    {% endif %}
-                </div>
-            </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+            </div>
+
+            <div class="percent-text">
+                {{ item.percent }} %
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+</div>
 </body>
 </html>
