@@ -18,15 +18,12 @@ templates = Jinja2Templates(
     directory="templates"
 )
 
-
 # Кэш
 cache: dict[str, list[dict]] = {}
-
 folder_size_cache: dict[str, int] = {}
 
 # Максимальное число рабочих потоков
 executor = ThreadPoolExecutor(max_workers=8)
-
 
 # Размер дисков, папок, файлов
 def format_size(size: int) -> str:
@@ -42,19 +39,14 @@ def format_size(size: int) -> str:
 
 
 def get_drive_root(path: str) -> str:
-
     if platform.system() == "Windows":
-
         return os.path.splitdrive(path)[0] + "\\"
-
     return "/"
 
 
-# Размер папки
 def get_folder_size(path: str):
     if path in folder_size_cache:
         return folder_size_cache[path]
-    
     total = 0
     try:
         with os.scandir(path) as entries:
@@ -72,7 +64,6 @@ def get_folder_size(path: str):
     return total
 
 
-# Главная страница
 @app.get("/", response_class=HTMLResponse)
 @app.get("/analizer", response_class=HTMLResponse)
 def drive_list(request: Request):
@@ -196,7 +187,6 @@ def open_folder(request: Request, path: str):
                     "parent_path":os.path.dirname(path)
                 } )
            
-     
         for item, future in futures:
             try:
                 size = future.result()
@@ -213,7 +203,6 @@ def open_folder(request: Request, path: str):
                 del item["path"]
 
         items.sort(key=lambda x: x["size"], reverse=True)
-
         cache[path] = items
 
     parent_path = None
